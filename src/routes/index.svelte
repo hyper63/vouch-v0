@@ -1,8 +1,14 @@
 <script>
 	let address = 'ADDRESS';
-	// function vouch() {
-	// 	alert('TODO: Vouch');
-	// }
+
+	async function arconnect() {
+		if (!arweaveWallet) {
+			window.open('https://arconnect.io', '_blank');
+		}
+		await arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION'], {
+			name: 'Vouch DAO v0'
+		});
+	}
 </script>
 
 <div class="hero min-h-screen bg-base-200">
