@@ -1,0 +1,7 @@
+import { test, expect } from 'vitest'
+import bundlr from './bundlr'
+
+test('dispatch to bundlr', async () => {
+  const result = await bundlr('8Eyr9iu-pae5HPHLtzd6lNNlv-APSkIJfVfae8WnP3I')
+  expect(result.id).toBeTruthy()
+})
