@@ -21,7 +21,7 @@ test('core test', async () => {
     })
   })
   await arweave.transactions.sign(tx, w)
-  console.log(JSON.stringify(tx))
+  //console.log(JSON.stringify(tx))
   try {
     const result = await core(tx).runWith({ arweave, search, bundlr }).toPromise()
     expect(true).toBe(true)
