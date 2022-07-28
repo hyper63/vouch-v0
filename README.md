@@ -1,38 +1,55 @@
-# create-svelte
+# Vouch DAO v0
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Vouch DAO is a decentralized identity validation service; the concept is to allow many different types of services to be used to validate or vouch a user's identity. These services can range from several identity platforms online. Why? This DAO aims to enable a sustainable and flexible identity management system that helps dApps and smart contracts prevent Sybil attacks on their systems.
 
-## Creating a project
+## How it works?
 
-If you're seeing this, you've probably already done this step. Congrats!
+The DAO will be a collection of identity management services that support the same output protocol so that dApps and Warp Contracts can quickly query and discover if a caller of specific contract action or data-entry request is valid. This service will help applications and contracts protect against Sybil attacks in a permissionless system.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+The user will visit one of these services, for example, blue.arweave.dev, and they will connect their wallet and execute the service verification workflow. (For the Twitter service, they will send a tweet) This workflow will step the user through the verification process. Once completed, the workflow will POST the required input to the /vouch endpoint; this endpoint will be responsible for writing the data-entry record to the Arweave network. An AR fee from the user getting validated will be required.
 
-# create a new project in my-app
-npm create svelte@latest my-app
+
+## Usage
+
+Feature: Create a Vouch Record for my wallet using Twitter Blue Vouch DAO Service
+
+```
+As a user with an Arweave Wallet that contains AR
+I want to create a Voucher for my wallet
+So that I can play the Passport Game on Permapages
 ```
 
-## Developing
+Scenario: Success
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```
+Given I am visiting blue.arweave.dev 
+And I have connected my wallet
+When I click the Vouch button
+And I post a tweet `I am in the process of getting a Voucher for the Arweave ecosystem, my wallet address is XXXXXXXXXXXXXX`
+And I post to the `/vouch` endpoint my wallet information 
+Then I should get back a successfully Vouched message
+And I should be able to query the Arweave gateway and find my Vouch DAO transaction showing that the Vouch transaction is successful
 ```
 
-## Building
+Scenario: Failure could not find the tweet
 
-To create a production version of your app:
-
-```bash
-npm run build
+```
+Given I am visiting blue.arweave.dev
+And I have connected my wallet 
+When I click the Vouch button
+And I do not post a tweet
+And I click the check status button
+Then I should get back a `Not Found` message tweet!
 ```
 
-You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Scenario: Failure tweet messages found from different accounts
+
+```
+Given I am visiting blue.arweave.dev
+And I have connected my wallet
+When I click the Vouch button
+And I post a tweet from multiple accounts
+And I click the check status button
+Then I should get back a `Bad Request` message
+```
