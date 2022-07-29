@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "env-cmd vite dev",
-		"build": "env-cmd vite build",
+		"build": "vite build",
 		"package": "svelte-kit package",
 		"preview": "env-cmd vite preview",
 		"prepare": "svelte-kit sync",
