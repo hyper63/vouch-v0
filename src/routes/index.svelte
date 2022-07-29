@@ -1,6 +1,7 @@
 <script>
 	import { ArweaveWebWallet } from 'arweave-wallet-connector';
 	import Arweave from 'arweave';
+	import Modal from '$lib/components/modal.svelte';
 
 	const arweave = Arweave.init({
 		host: 'arweave.net',
@@ -12,6 +13,7 @@
 	let connected = false;
 	let tweeted = false;
 	let success = false;
+	let submitting = false;
 
 	async function arconnect() {
 		if (!window.arweaveWallet) {
@@ -53,28 +55,30 @@
 	}
 
 	async function checkStatus() {
-		//if (connected && tweeted && address !== 'ADDRESS') {
-		// create and sign transaction, then post to /vouch
-		const tx = await arweave.createTransaction({
-			data: JSON.stringify({
-				address,
-				service: 'twitter',
-				type: 'vouch'
-			})
-		});
-		await arweave.transactions.sign(tx);
-		const result = await fetch('/vouch.json', {
-			method: 'POST',
-			body: JSON.stringify(tx),
-			headers: {
-				'Content-Type': 'application/json'
+		if (connected && tweeted && address !== 'ADDRESS') {
+			submitting = true;
+			// create and sign transaction, then post to /vouch
+			const tx = await arweave.createTransaction({
+				data: JSON.stringify({
+					address,
+					service: 'twitter',
+					type: 'vouch'
+				})
+			});
+			await arweave.transactions.sign(tx);
+			const result = await fetch('/vouch.json', {
+				method: 'POST',
+				body: JSON.stringify(tx),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then((res) => (res.ok ? res.json() : res.text()));
+			submitting = false;
+			if (result.ok) {
+				success = true;
 			}
-		}).then((res) => (res.ok ? res.json() : res.text()));
-		if (result.ok) {
-			success = true;
+			//console.log(result);
 		}
-		//console.log(result);
-		//}
 	}
 </script>
 
@@ -184,3 +188,6 @@
 		</div>
 	</div>
 {/if}
+<Modal open={submitting} ok={false}>
+	<h3>Submitting Vouch Request...</h3>
+</Modal>
