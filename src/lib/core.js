@@ -1,5 +1,6 @@
-import { ReaderT, Async } from 'crocks'
+import crocks from 'crocks'
 
+const { ReaderT, Async } = crocks
 const AsyncReader = ReaderT(Async)
 const { ask, of, lift } = AsyncReader
 
