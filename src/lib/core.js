@@ -42,12 +42,16 @@ function verifySignature(tx) {
       .map(x => {
         return { data: arweave.utils.bufferToString(arweave.utils.b64UrlToBuffer(x.data)) }
       })
-      .map(x => (console.log('data', x.data), x))
       .chain(createTransaction(arweave))
       .map(newTx => {
         newTx.owner = tx.owner
         newTx.id = tx.id
         newTx.signature = tx.signature
+        tx.tags.map(t => {
+          // console.log(arweave.utils.b64UrlToString(t.name))
+          // console.log(arweave.utils.b64UrlToString(t.value))
+          newTx.addTag(arweave.utils.b64UrlToString(t.name), arweave.utils.b64UrlToString(t.value))
+        })
         return newTx
       })
       .chain(arweaveVerify(arweave))
