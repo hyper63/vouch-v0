@@ -7,7 +7,9 @@ export default async function (address) {
     walletFile = '/etc/secrets/wallet.json'
   }
   const wallet = JSON.parse(fs.readFileSync(walletFile, 'utf-8'))
-  const bundlr = new Bundlr('https://node2.bundlr.network', 'arweave', wallet)
+  const bundlr = import.meta.env.PROD
+    ? new Bundlr.default('https://node2.bundlr.network', 'arweave', wallet)
+    : new Bundlr('https://node2.bundlr.network', 'arweave', wallet)
 
   const tags = [
     { name: 'Content-Type', value: 'application/json' },
