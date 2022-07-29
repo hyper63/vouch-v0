@@ -2,18 +2,30 @@
 	import { ArweaveWebWallet } from 'arweave-wallet-connector';
 	import Arweave from 'arweave';
 	import Modal from '$lib/components/modal.svelte';
+	import service from '$lib/store.js';
 
 	const arweave = Arweave.init({
 		host: 'arweave.net',
 		port: 443,
 		protocol: 'https'
 	});
+	const send = $service.send;
 
-	let address = 'ADDRESS';
-	let connected = false;
-	let tweeted = false;
-	let success = false;
+	//let address = 'ADDRESS';
+	$: address = $service.context.address;
+	$: current = $service.machine.current;
+
 	let submitting = false;
+
+	function getStarted() {
+		if (current === 'welcome') {
+			document.getElementById('connect').scrollIntoView();
+		} else if (current === 'connected') {
+			document.getElementById('tweet').scrollIntoView();
+		} else {
+			document.getElementById('status').scrollIntoView();
+		}
+	}
 
 	async function arconnect() {
 		if (!window.arweaveWallet) {
@@ -23,7 +35,7 @@
 			name: 'Vouch DAO v0'
 		});
 		address = await arweaveWallet.getActiveAddress();
-		connected = true;
+		send({ type: 'connect', value: address });
 		document.getElementById('tweet').scrollIntoView();
 	}
 
@@ -35,14 +47,9 @@
 		wallet.setUrl('arweave.app');
 		await wallet.connect();
 		address = await arweaveWallet.getActiveAddress();
-		connected = true;
+		send({ type: 'connect', value: address });
 		document.getElementById('tweet').scrollIntoView();
 	}
-
-	// window.addEventListener('arweaveWalletLoaded', () => {
-	// 	/** Handle ArConnect load event **/
-	// 	console.log('arweaveWallet loaded');
-	// });
 
 	const tweetHREF = (addr) => {
 		const text = encodeURI(`I am vouching for my wallet address ${addr}  🐘 via twitter!`);
@@ -50,12 +57,12 @@
 	};
 
 	function tweet() {
-		tweeted = true;
+		send('tweet');
 		document.getElementById('status').scrollIntoView();
 	}
 
 	async function checkStatus() {
-		if (connected && tweeted && address !== 'ADDRESS') {
+		if (current === 'tweeted') {
 			submitting = true;
 			// create and sign transaction, then post to /vouch
 			const tx = await arweave.createTransaction({
@@ -65,7 +72,9 @@
 					type: 'vouch'
 				})
 			});
+
 			await arweave.transactions.sign(tx);
+
 			const result = await fetch('/vouch.json', {
 				method: 'POST',
 				body: JSON.stringify(tx),
@@ -73,11 +82,14 @@
 					'Content-Type': 'application/json'
 				}
 			}).then((res) => (res.ok ? res.json() : res.text()));
+
 			submitting = false;
+
 			if (result.ok) {
-				success = true;
+				send('submitSuccess');
+			} else {
+				send('submitFailure');
 			}
-			//console.log(result);
 		}
 	}
 </script>
@@ -89,7 +101,8 @@
 -->
 <div class="sticky top-0 flex justify-end">
 	<div class="px-16 py-4">
-		{#if connected}
+		<span class="mr-16">{address}</span>
+		{#if current !== 'welcome'}
 			<div class="btn btn-secondary">Connected</div>
 		{:else}
 			<a href="#connect" class="btn btn-primary">Not Connected</a>
@@ -112,7 +125,7 @@
 				are a user.
 			</p>
 			<div class="mt-32 flex justify-center space-x-4">
-				<a href="#connect" class="btn btn-primary">Get Started</a>
+				<button on:click={getStarted} class="btn btn-primary">Get Started</button>
 				<a href="/learn" class="btn btn-secondary">Learn More</a>
 			</div>
 		</div>
@@ -124,13 +137,15 @@
 		<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
 
 		<div class="text-primary-content">
-			<h1 class="text-5xl font-bold">Connect</h1>
-			<p class="py-6">
-				Step One: You need to connect your Arweave Wallet. Choose the Wallet you use.
-			</p>
+			<h1 class="text-5xl font-bold">Step One: Connect</h1>
+			<p class="py-6">You need to connect your Arweave Wallet. Choose the Wallet you use.</p>
 			<div>
-				<button class="btn btn-secondary" on:click={arconnect}>ArConnect</button>
-				<button class="btn btn-secondary" on:click={appconnect}>Aweave.app</button>
+				<button disabled={current !== 'welcome'} class="btn btn-secondary" on:click={arconnect}
+					>ArConnect</button
+				>
+				<button disabled={current !== 'welcome'} class="btn btn-secondary" on:click={appconnect}
+					>Aweave.app</button
+				>
 			</div>
 			<div class="mt-32 prose lg:prose-xl">
 				<blockquote>
@@ -146,22 +161,36 @@
 	<div class="hero-content flex-col lg:flex-row-reverse">
 		<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
 		<div>
-			<h1 class="text-5xl font-bold">Tweet</h1>
-			<p class="py-6">Step Two: Tweet a vouch message!</p>
+			<h1 class="text-5xl font-bold">Step Two: Tweet</h1>
+			<p class="py-6">Tweet a vouch message!</p>
 			<div class="mockup-code text-primary-content">
 				<pre><code>I am vouching for my wallet address {address}  🐘 via twitter!</code></pre>
 			</div>
-			<a
-				target="_blank"
-				href={tweetHREF(address)}
-				on:click={tweet}
-				class="btn btn-info no-underline">Tweet</a
-			>
+			{#if current === 'connected'}
+				<a
+					target="_blank"
+					href={tweetHREF(address)}
+					on:click={tweet}
+					class="mt-8 btn btn-info no-underline">Tweet</a
+				>
+			{:else}
+				<a
+					disabled={true}
+					target="_blank"
+					href={tweetHREF(address)}
+					on:click={tweet}
+					class="mt-8 btn btn-info no-underline">Tweet</a
+				>
+			{/if}
+			<div class="mt-8 alert alert-info">
+				When you click the "Tweet" button, this app will open up a new tab in which you will need to
+				login and tweet the filled in tweet.
+			</div>
 		</div>
 	</div>
 </div>
 <a id="status" />
-{#if success}
+{#if current === 'success'}
 	<div class="hero min-h-screen bg-success">
 		<div class="hero-content flex-col lg:flex-row">
 			<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
@@ -172,18 +201,29 @@
 			</div>
 		</div>
 	</div>
+{:else if current === 'failure'}
+	<div class="hero min-h-screen bg-error">
+		<div class="hero-content flex-col lg:flex-row">
+			<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
+
+			<div class="text-primary-content">
+				<h1 class="text-5xl font-bold">Error!</h1>
+				<p class="py-6">Your wallet could not be verified using Vouch DAO</p>
+			</div>
+		</div>
+	</div>
 {:else}
 	<div class="hero min-h-screen bg-secondary">
 		<div class="hero-content flex-col lg:flex-row">
 			<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
 
 			<div class="text-primary-content">
-				<h1 class="text-5xl font-bold">Status</h1>
+				<h1 class="text-5xl font-bold">Step Three: Vouch</h1>
 				<p class="py-6">
-					Step Three: The Vouch DAO service will process your request. It may take a few minutes for
-					Vouch DAO to confirm your tweet.
+					The Vouch DAO service will process your request. It may take a few minutes for Vouch DAO
+					to confirm your tweet.
 				</p>
-				<button class="btn btn-primary" on:click={checkStatus}>Check Status</button>
+				<button class="btn btn-primary" on:click={checkStatus}>Submit</button>
 			</div>
 		</div>
 	</div>
