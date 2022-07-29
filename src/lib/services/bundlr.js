@@ -2,8 +2,11 @@ import Bundlr from '@bundlr-network/client'
 import fs from 'fs'
 
 export default async function (address) {
-
-  const wallet = JSON.parse(fs.readFileSync('./wallet.json', 'utf-8'))
+  let walletFile = './wallet.json'
+  if (import.meta.env.PROD) {
+    walletFile = '/etc/secrets/wallet.json'
+  }
+  const wallet = JSON.parse(fs.readFileSync(walletFile, 'utf-8'))
   const bundlr = new Bundlr('https://node2.bundlr.network', 'arweave', wallet)
 
   const tags = [
