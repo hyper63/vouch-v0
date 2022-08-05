@@ -121,7 +121,7 @@
 
 			<div class="mt-32 flex justify-center space-x-4">
 				<button on:click={getStarted} class="btn btn-primary">Get Started</button>
-				<a href="https://vouch-dao.xyz" target="_blank" class="btn btn-secondary">Learn More</a>
+				<a href="https://vouchdao.xyz" target="_blank" class="btn btn-secondary">Learn More</a>
 			</div>
 		</div>
 	</div>
