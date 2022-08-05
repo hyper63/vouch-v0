@@ -14,8 +14,9 @@ export default async function (address) {
   const tags = [
     { name: 'Content-Type', value: 'application/json' },
     { name: 'App-Name', value: 'Vouch' },
-    { name: 'App-Version', value: '0.0.0' },
-    { name: 'Vouch-Address', value: address.toString() }
+    { name: 'App-Version', value: '0.1' },
+    { name: 'Verification-Method', value: 'Twitter' },
+    { name: 'Vouch-For', value: address.toString() }
   ]
 
   const data = JSON.stringify({

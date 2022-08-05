@@ -113,7 +113,7 @@
 <div class="hero min-h-screen bg-base-200">
 	<div class="hero-content text-center text-primary-content">
 		<div class="max-w-md">
-			<h1 class="text-5xl font-bold">Vouch DAO v0</h1>
+			<h1 class="text-5xl font-bold">Vouch Twitter v0</h1>
 			<p class="py-6">
 				Identity management in Web3 is a big deal, how can permissionless networks prevent against
 				Sybil attacks without users having to provide decentrailized applications proof of identity?
