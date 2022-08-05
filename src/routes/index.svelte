@@ -41,7 +41,7 @@
 
 	async function appconnect() {
 		const wallet = new ArweaveWebWallet({
-			name: 'Vouch DAO v0'
+			name: 'Vouch Twitter v0'
 		});
 
 		wallet.setUrl('arweave.app');
@@ -129,8 +129,9 @@
 <a id="connect" />
 <div class="hero min-h-screen bg-primary">
 	<div class="hero-content flex-col lg:flex-row">
+		<!--
 		<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
-
+		-->
 		<div class="text-primary-content">
 			<h1 class="text-5xl font-bold">Step One: Connect</h1>
 			<p class="py-6">You need to connect your Arweave Wallet. Choose the Wallet you use.</p>
@@ -154,7 +155,9 @@
 <a id="tweet" />
 <div class="hero min-h-screen bg-base-200">
 	<div class="hero-content flex-col lg:flex-row-reverse">
+		<!--
 		<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
+		-->
 		<div>
 			<h1 class="text-5xl font-bold">Step Two: Tweet</h1>
 			<p class="py-6">Tweet a vouch message!</p>
@@ -188,35 +191,38 @@
 {#if current === 'success'}
 	<div class="hero min-h-screen bg-success">
 		<div class="hero-content flex-col lg:flex-row">
+			<!--
 			<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
-
+			-->
 			<div class="text-primary-content">
 				<h1 class="text-5xl font-bold">Success!</h1>
-				<p class="py-6">Your wallet has been verified using Vouch DAO</p>
+				<p class="py-6">Your wallet has been verified using Vouch Twitter</p>
 			</div>
 		</div>
 	</div>
 {:else if current === 'failure'}
 	<div class="hero min-h-screen bg-error">
 		<div class="hero-content flex-col lg:flex-row">
+			<!--
 			<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
-
+			-->
 			<div class="text-primary-content">
 				<h1 class="text-5xl font-bold">Error!</h1>
-				<p class="py-6">Your wallet could not be verified using Vouch DAO</p>
+				<p class="py-6">Your wallet could not be verified using Vouch Twitter</p>
 			</div>
 		</div>
 	</div>
 {:else}
 	<div class="hero min-h-screen bg-secondary">
 		<div class="hero-content flex-col lg:flex-row">
+			<!--
 			<img src="https://placeimg.com/260/400/arch" class="max-w-sm rounded-lg shadow-2xl" />
-
+			-->
 			<div class="text-primary-content">
 				<h1 class="text-5xl font-bold">Step Three: Vouch</h1>
 				<p class="py-6">
-					The Vouch DAO service will process your request. It may take a few minutes for Vouch DAO
-					to confirm your tweet.
+					The Vouch Twitter service will process your request. It may take a few minutes for Vouch
+					Twitter to confirm your tweet.
 				</p>
 				<button class="btn btn-primary" on:click={checkStatus}>Submit</button>
 			</div>
