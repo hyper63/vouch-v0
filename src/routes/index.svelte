@@ -115,18 +115,15 @@
 		<div class="max-w-md">
 			<h1 class="text-5xl font-bold">Vouch Twitter v0</h1>
 			<p class="py-6">
-				Identity management in Web3 is a big deal, how can permissionless networks prevent against
-				Sybil attacks without users having to provide decentrailized applications proof of identity?
+				Vouch Twitter Service is a registered server of Vouch DAO, this server allows users to
+				leverage the power of twitter to create a Vouch Record for Web of Value Services.
 			</p>
-			<p>
-				With Vouch DAO, you can choose from a selection of Vouch Services to create a vouch contract
-				that informs dApps that your wallet is a real user! But you don't have to give these
-				services or dApps any information about yourself that you don't want to just to verify you
-				are a user.
-			</p>
+
 			<div class="mt-32 flex justify-center space-x-4">
 				<button on:click={getStarted} class="btn btn-primary">Get Started</button>
-				<a href="/learn" class="btn btn-secondary">Learn More</a>
+				<a href="https://vouch-dao.community.xyz" target="_blank" class="btn btn-secondary"
+					>Learn More</a
+				>
 			</div>
 		</div>
 	</div>
