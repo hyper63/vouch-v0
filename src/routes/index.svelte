@@ -115,8 +115,11 @@
 		<div class="max-w-md">
 			<h1 class="text-5xl font-bold">Vouch Twitter v0</h1>
 			<p class="py-6">
-				Vouch Twitter Service is a registered server of Vouch DAO, this server allows users to
-				leverage the power of twitter to create a Vouch Record for Web of Value Services.
+				Vouch Twitter Service is a registered server of <a
+					class="link"
+					href="https://www.vouchdao.xyz/">Vouch DAO</a
+				>, this server allows users to leverage the power of twitter to create a Vouch Record for
+				Web of Value Services.
 			</p>
 
 			<div class="mt-32 flex justify-center space-x-4">
