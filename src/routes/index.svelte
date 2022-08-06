@@ -140,7 +140,7 @@
 					>ArConnect</button
 				>
 				<button disabled={current !== 'welcome'} class="btn btn-secondary" on:click={appconnect}
-					>Aweave.app</button
+					>Arweave.app</button
 				>
 			</div>
 			<div class="mt-32 prose lg:prose-xl">
