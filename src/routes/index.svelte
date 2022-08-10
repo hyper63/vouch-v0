@@ -64,20 +64,24 @@
 	async function checkStatus() {
 		if (current === 'tweeted') {
 			submitting = true;
-			// create and sign transaction, then post to /vouch
-			const tx = await arweave.createTransaction({
-				data: JSON.stringify({
+			const key = await arweave.wallets.generate();
+			const data = Arweave.utils.stringToBuffer(
+				JSON.stringify({
 					address,
 					service: 'twitter',
 					type: 'vouch'
 				})
-			});
-
-			await arweave.transactions.sign(tx);
+			);
+			const signature = await Arweave.crypto.sign(key, data);
+			const payload = {
+				data: Arweave.utils.bufferTob64Url(data),
+				publicKey: key.n,
+				signature: Arweave.utils.bufferTob64Url(signature)
+			};
 
 			const result = await fetch('/vouch.json', {
 				method: 'POST',
-				body: JSON.stringify(tx),
+				body: JSON.stringify(payload),
 				headers: {
 					'Content-Type': 'application/json'
 				}

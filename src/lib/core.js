@@ -7,7 +7,7 @@ const { ask, of, lift } = AsyncReader
 export default function (tx) {
   return of(tx)
     // verify signature
-    .chain(verifySignature)
+    .chain(verifySignature2)
     // search for tweet
     // validate tweet results
     .chain(searchTwitter)
@@ -17,21 +17,32 @@ export default function (tx) {
 
 }
 
-function dispatch(tx) {
+function dispatch(data) {
   return ask(({ arweave, bundlr }) => {
-    const data = JSON.parse(arweave.utils.bufferToString(arweave.utils.b64UrlToBuffer(tx.data)))
     return Async.fromPromise(bundlr)(data.address)
       .chain(result => result.ok ? Async.Resolved(result) : Async.Rejected(new Error('Could not dispatch Transaction!')))
   }).chain(lift)
 }
 
-function searchTwitter(tx) {
+function searchTwitter(data) {
   //const getAddress = (arweave) => Async.fromPromise(arweave.wallets.jwkToAddress.bind(arweave.wallets))
   return ask(({ arweave, search }) => {
-    const data = JSON.parse(arweave.utils.bufferToString(arweave.utils.b64UrlToBuffer(tx.data)))
+    //const data = JSON.parse(arweave.utils.bufferToString(arweave.utils.b64UrlToBuffer(tx.data)))
     return Async.fromPromise(search)(data.address)
-      .chain(result => result ? Async.Resolved(tx) : Async.Rejected(new Error('Could not find tweet!')))
+      .chain(result => result ? Async.Resolved(data) : Async.Rejected(new Error('Could not find tweet!')))
   }).chain(lift)
+}
+
+function verifySignature2({ data, publicKey, signature }) {
+  const verify = arweave => Async.fromPromise(arweave.crypto.verify.bind(arweave.crypto))
+  // validate { data, publicKey, signature }
+  return ask(({ arweave }) =>
+    verify(arweave)(publicKey, arweave.utils.b64UrlToBuffer(data), arweave.utils.b64UrlToBuffer(signature))
+      .chain(result => result
+        ? Async.Resolved(JSON.parse(arweave.utils.b64UrlToString(data)))
+        : Async.Rejected(new Error('Could not veify payload ' + data))
+      )
+  ).chain(lift)
 }
 
 function verifySignature(tx) {

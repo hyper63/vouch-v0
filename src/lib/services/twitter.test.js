@@ -1,8 +1,7 @@
-import { test, expect } from 'vitest'
+import { test, assert } from 'vitest'
 import { search } from './twitter'
 
 test('twitter search', async () => {
-  const result = await search('8Eyr9iu-pae5HPHLtzd6lNNlv-APSkIJfVfae8WnP3I')
-  console.log(result)
-  expect(true).toBe(true)
+  const result = await search('grpPcgIh95eDYjByE6OYbB_o8QQYcgOJYdexUDcGXik').catch(x => x)
+  assert.equal(result, true)
 })
