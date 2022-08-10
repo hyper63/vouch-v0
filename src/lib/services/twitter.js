@@ -11,7 +11,7 @@ export function search(txt) {
     }
   }).then(res => res.ok ? res.json() : res.text())
     .then((result) =>
-      (result.data && result.data[0].text === `I am vouching for my wallet address ${txt}  🐘 via twitter!`)
+      (result.data && result.data[0].text === `I am vouching for my wallet address ${txt}  🐘 via @vouchdao!`)
         ? result.data[0].author_id
         : Promise.reject(new Error('Could not find Tweet!'))
     )

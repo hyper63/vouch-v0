@@ -52,7 +52,7 @@
 	}
 
 	const tweetHREF = (addr) => {
-		const text = encodeURI(`I am vouching for my wallet address ${addr}  🐘 via twitter!`);
+		const text = encodeURI(`I am vouching for my wallet address ${txt}  🐘 via @vouchdao!`);
 		return `https://twitter.com/intent/tweet?text=${text}`;
 	};
 
@@ -169,7 +169,7 @@
 			<h1 class="text-5xl font-bold">Step Two: Tweet</h1>
 			<p class="py-6">Tweet a vouch message!</p>
 			<div class="mockup-code text-primary-content">
-				<pre><code>I am vouching for my wallet address {address}  🐘 via twitter!</code></pre>
+				<pre><code>I am vouching for my wallet address {address}  🐘 via @vouchdao!</code></pre>
 			</div>
 			{#if current === 'connected'}
 				<a
