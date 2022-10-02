@@ -2,6 +2,6 @@ import { test, expect } from 'vitest'
 import bundlr from './bundlr'
 
 test('dispatch to bundlr', async () => {
-  const result = await bundlr('8Eyr9iu-pae5HPHLtzd6lNNlv-APSkIJfVfae8WnP3I')
+  const result = await bundlr('gXHKPxr7R8ItdidbzzWZLo_ww5JVVFi-fOUxcL6Fnfg')
   expect(result.id).toBeTruthy()
 })

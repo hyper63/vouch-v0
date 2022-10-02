@@ -12,3 +12,7 @@ const arweave = Arweave.init({
 export default function (tx) {
   return core(tx).runWith({ arweave, search, bundlr }).toPromise()
 }
+
+export async function check(addr) {
+  return search(addr)
+}
