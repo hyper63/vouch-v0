@@ -14,13 +14,21 @@ export default function (tx) {
     // create new Transaction using Bundlr-Network/Client
     // post transaction using Bundlr-Network/Client
     .chain(dispatch)
+    // get transaction id and then write to VouchDAO
+    .chain(addVouchDAO)
 
+}
+
+function addVouchDAO({ address, transaction }) {
+  return ask(({ contract, wallet }) => {
+    return Async.fromPromise(contract)(wallet, address, transaction)
+  }).chain(lift)
 }
 
 function dispatch(data) {
   return ask(({ arweave, bundlr }) => {
     return Async.fromPromise(bundlr)(data.address)
-      .chain(result => result.ok ? Async.Resolved(result) : Async.Rejected(new Error('Could not dispatch Transaction!')))
+      .chain(result => result.ok ? Async.Resolved({ address: data.address, transaction: result.id }) : Async.Rejected(new Error('Could not dispatch Transaction!')))
   }).chain(lift)
 }
 

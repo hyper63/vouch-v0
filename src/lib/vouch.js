@@ -1,6 +1,7 @@
 import core from './core'
 import Arweave from 'arweave'
 import bundlr from './services/bundlr'
+import contract from './services/contract'
 import { search } from './services/twitter'
 
 const arweave = Arweave.init({
@@ -10,7 +11,7 @@ const arweave = Arweave.init({
 })
 
 export default function (tx) {
-  return core(tx).runWith({ arweave, search, bundlr }).toPromise()
+  return core(tx).runWith({ arweave, search, bundlr, contract }).toPromise()
 }
 
 export async function check(addr) {
