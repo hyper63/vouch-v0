@@ -1,13 +1,43 @@
 import crocks from 'crocks'
+/**
+ * @typedef { import("crocks/Async/Async")} Async
+ * 
+ * @typedef { import("crocks/ReaderT")} ReaderT
+ */
 
 const { ReaderT, Async } = crocks
+// @ts-ignore
 const AsyncReader = ReaderT(Async)
 const { ask, of, lift } = AsyncReader
+// @ts-ignore
+const { fromPromise, Resolved, Rejected } = Async
 
+/**
+ * @typedef {Object} Services
+ * @property {any} arweave?
+ * @property {any} bundlr?
+ * @property {any} wallet?
+ * @property {any} warp?
+ * @property {any} contract?
+ * @property {any} search?
+ */
+
+/**
+ * @param {any} tx
+ * @returns {AsyncReader}
+ */
 export default function (tx) {
   return of(tx)
     // verify signature
     .chain(verifySignature2)
+    // wait 60 seconds for tweet to appear
+    .chain((x) => ask(() => fromPromise(() => new Promise(resolve => {
+      //if (import.meta.env.PROD) {
+      setTimeout(() => resolve(x), 60 * 1000)
+      //} else {
+      //  resolve(x)
+      //}
+    }))()).chain(lift))
     // search for tweet
     // validate tweet results
     .chain(searchTwitter)
@@ -19,64 +49,97 @@ export default function (tx) {
 
 }
 
+/** 
+ * @typedef {object} Data
+ * @property {string} address
+ * @property {string} transaction
+ * 
+ * @param {Data} data 
+ * @returns {AsyncReader}
+ */
 function addVouchDAO({ address, transaction }) {
-  return ask(({ contract, wallet }) => {
-    return Async.fromPromise(contract)(wallet, address, transaction)
-  }).chain(lift)
+  //console.log({ address, transaction })
+  return ask(
+    /**
+     * @param {Services} services 
+     */
+    ({ warp, contract, wallet }) => {
+      return fromPromise(contract)(warp, wallet, address, transaction)
+    }).chain(lift)
 }
 
+/**
+ * @param {any} data
+ * @returns {AsyncReader}
+ */
 function dispatch(data) {
-  return ask(({ arweave, bundlr }) => {
-    return Async.fromPromise(bundlr)(data.address)
-      .chain(result => result.ok ? Async.Resolved({ address: data.address, transaction: result.id }) : Async.Rejected(new Error('Could not dispatch Transaction!')))
-  }).chain(lift)
+  return ask(
+    /**
+     * @param {Services} services
+     */
+    ({ bundlr }) => {
+      return fromPromise(bundlr)(data.address)
+        .chain(
+          /**
+           * @param {any} result
+           * @returns {Async}
+           */
+          result => result.ok ? Resolved({ address: data.address, transaction: result.id }) : Rejected(new Error('Could not dispatch Transaction!')))
+    }).chain(lift)
 }
 
+/**
+ * @param {any} data
+ * @returns {AsyncReader}
+ */
 function searchTwitter(data) {
-  //const getAddress = (arweave) => Async.fromPromise(arweave.wallets.jwkToAddress.bind(arweave.wallets))
-  return ask(({ arweave, search }) => {
-    //const data = JSON.parse(arweave.utils.bufferToString(arweave.utils.b64UrlToBuffer(tx.data)))
-    return Async.fromPromise(search)(data.address)
-      .chain(result => result ? Async.Resolved(data) : Async.Rejected(new Error('Could not find tweet!')))
-  }).chain(lift)
+  return ask(
+    /**
+     * @param {Services} services
+     */
+    ({ search }) => {
+      return fromPromise(search)(data.address)
+        .chain(
+          /**
+           * @param {Boolean} result
+           * @returns {Async}
+           */
+          result => result ? Resolved(data) : Rejected(new Error('Could not find tweet!')))
+    }).chain(lift)
 }
 
+/** 
+ * @typedef {Object} SignatureInput
+ * @property {any} data
+ * @property {string} publicKey
+ * @property {string} signature
+ * 
+ * @param {SignatureInput} input
+ * @returns {AsyncReader}
+ */
 function verifySignature2({ data, publicKey, signature }) {
-  const verify = arweave => Async.fromPromise(arweave.crypto.verify.bind(arweave.crypto))
-  // validate { data, publicKey, signature }
-  return ask(({ arweave }) =>
-    verify(arweave)(publicKey, arweave.utils.b64UrlToBuffer(data), arweave.utils.b64UrlToBuffer(signature))
-      .chain(result => result
-        ? Async.Resolved(JSON.parse(arweave.utils.b64UrlToString(data)))
-        : Async.Rejected(new Error('Could not veify payload ' + data))
-      )
+
+  /**
+   * @param {any} arweave
+   * @returns {Async}
+   */
+  const verify = arweave => fromPromise(arweave.crypto.verify.bind(arweave.crypto))
+  return ask(
+    /**
+     * @param {Services} services 
+     * @returns {Async}
+     */
+    ({ arweave }) =>
+      // @ts-ignore
+      verify(arweave)(publicKey, arweave.utils.b64UrlToBuffer(data), arweave.utils.b64UrlToBuffer(signature))
+        .chain(
+          /**
+           * @param {Boolean} result
+           * @returns {Async}
+           */
+          result => result
+            ? Resolved(JSON.parse(arweave.utils.b64UrlToString(data)))
+            : Rejected(new Error('Could not veify payload ' + data))
+        )
   ).chain(lift)
-}
-
-function verifySignature(tx) {
-  const arweaveVerify = (arweave) => Async.fromPromise(arweave.transactions.verify.bind(arweave.transactions))
-  const createTransaction = (arweave) => Async.fromPromise(arweave.createTransaction.bind(arweave))
-
-  return ask(({ arweave }) =>
-    Async.of(tx)
-      .map(x => {
-        return { data: arweave.utils.bufferToString(arweave.utils.b64UrlToBuffer(x.data)) }
-      })
-      .chain(createTransaction(arweave))
-      .map(newTx => {
-        newTx.owner = tx.owner
-        newTx.id = tx.id
-        newTx.signature = tx.signature
-        tx.tags.map(t => {
-          newTx.addTag(arweave.utils.b64UrlToString(t.name), arweave.utils.b64UrlToString(t.value))
-        })
-        return newTx
-      })
-      .chain(arweaveVerify(arweave))
-      .chain(result => result ? Async.Resolved(tx) : Async.Rejected(new Error('Could not verify transaction.')))
-  ).chain(lift)
-}
-
-function searchText(address) {
-  return `I am using twitter to vouch for my Arweave Wallet: ${address}`
 }

@@ -5,8 +5,6 @@ const API = 'https://api.twitter.com/2/tweets/search/recent'
 const API2 = 'https://api.twitter.com/2/users'
 
 export function search(txt) {
-  console.log(txt)
-  console.log(BEARER)
   return fetch(API + `?query=${txt}&tweet.fields=author_id`, {
     headers: {
       Authorization: `Bearer ${BEARER}`

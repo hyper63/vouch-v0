@@ -7,7 +7,7 @@ export async function POST(event) {
     const result = await vouch(body)
     console.log('success!')
     return {
-      body: result
+      body: result ? { ok: true } : { ok: false }
     }
   } catch (e) {
     console.log(e.message)

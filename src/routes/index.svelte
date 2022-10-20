@@ -216,6 +216,12 @@
 			<div class="text-primary-content">
 				<h1 class="text-5xl font-bold">Error!</h1>
 				<p class="py-6">Your wallet could not be verified using Vouch Twitter</p>
+				<p class="py-6">
+					For support, please go to <a class="link" href="https://discord.gg/jRTnwdrxg5"
+						>Permapages Discord</a
+					>
+					and enter your issue in the #help channel
+				</p>
 			</div>
 		</div>
 	</div>

@@ -743,6 +743,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/crocks@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@types/crocks/-/crocks-0.12.0.tgz#a64ed85404d15973b801e4e89d8fd2b5eb259df1"
+  integrity sha512-m3tnPey+1cJa2ZqcH5g0+Atael1gzxdqY+dZeUIl/nvrXeudRDGKg/vWvtynGYEoViw5G7JZoIk5Royow+WhuA==
+
 "@types/estree@*":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.0.tgz#5fb2e536c1ae9bf35366eed879e827fa59ca41c2"
