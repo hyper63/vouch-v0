@@ -1,7 +1,23 @@
 import { test, expect } from 'vitest'
 import bundlr from './bundlr'
+import contract from './contract'
+import { WarpFactory, LoggerFactory } from 'warp-contracts/mjs'
+import fs from 'fs'
+
+let walletFile = './wallet.json'
+if (import.meta.env.PROD) {
+  walletFile = '/etc/secrets/wallet.json'
+}
+const wallet = JSON.parse(fs.readFileSync(walletFile, 'utf-8'))
+
+
+const warp = WarpFactory.forMainnet()
 
 test('dispatch to bundlr', async () => {
-  const result = await bundlr('gXHKPxr7R8ItdidbzzWZLo_ww5JVVFi-fOUxcL6Fnfg')
+  const address = 'uWFatpjMyqxa3kGIuI3r02lxQ5tH22cXgadqj-5YJBA'
+  const result = await bundlr(address)
   expect(result.id).toBeTruthy()
+  const result2 = await contract(warp, wallet, address, result.id)
+  console.log(result2)
+  expect(result2).toBeTruthy()
 })
