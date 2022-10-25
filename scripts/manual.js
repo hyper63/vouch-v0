@@ -1,15 +1,27 @@
 import Bundlr from '@bundlr-network/client'
 import fs from 'fs'
+import contract from '../src/lib/services/contract.js'
+import { WarpFactory, LoggerFactory } from 'warp-contracts/mjs'
 
-export default async function (address) {
-  let walletFile = './wallet.json'
-  if (import.meta.env?.PROD) {
-    walletFile = '/etc/secrets/wallet.json'
-  }
-  const wallet = JSON.parse(fs.readFileSync(walletFile, 'utf-8'))
-  const bundlr = import.meta.env?.PROD
-    ? new Bundlr.default('https://node2.bundlr.network', 'arweave', wallet)
-    : new Bundlr('https://node2.bundlr.network', 'arweave', wallet)
+// manually vouch a user
+const address = 'SWtLEypwTb6fXbpJDAPIdsWKniwsyCUim8rii6BjQVU'
+
+let walletFile = './wallet.json'
+
+const wallet = JSON.parse(fs.readFileSync(walletFile, 'utf-8'))
+
+
+const warp = WarpFactory.forMainnet()
+
+const result = await post(address)
+const result2 = await contract(warp, wallet, address, result.id)
+
+console.log(result2)
+
+
+async function post(address) {
+
+  const bundlr = new Bundlr.default('https://node2.bundlr.network', 'arweave', wallet)
 
   const tags = [
     { name: 'Content-Type', value: 'application/json' },
@@ -30,4 +42,5 @@ export default async function (address) {
 
   const result = await tx.upload()
   return { ok: true, id: result.data.id }
+
 }
