@@ -4,7 +4,7 @@ import contract from '../src/lib/services/contract.js'
 import { WarpFactory, LoggerFactory } from 'warp-contracts/mjs'
 
 // manually vouch a user
-const address = 'SWtLEypwTb6fXbpJDAPIdsWKniwsyCUim8rii6BjQVU'
+const address = 'ZEu7pmk5yKnR5TxeOhk6MNOLcaDB4PzB73FO94xRh3Y'
 
 let walletFile = './wallet.json'
 
