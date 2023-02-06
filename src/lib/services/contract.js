@@ -9,6 +9,7 @@ const VOUCH = '_z0ch80z_daDUFqC9jHjfOL8nekJcok4ZRkE_UesYsk'
  */
 export default async function (warp, wallet, address, transaction) {
   const vouchContract = warp.contract(VOUCH)
+  await vouchContract.syncState('https://dre-1.warp.cc/contract', { validity: true })
   return await vouchContract.connect(wallet).writeInteraction({
     function: 'addVouchedUser',
     address,
