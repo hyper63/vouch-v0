@@ -2,7 +2,7 @@ import core from './core'
 import Arweave from 'arweave'
 import bundlr from './services/bundlr'
 import contract from './services/contract'
-import { WarpFactory, LoggerFactory } from 'warp-contracts/mjs'
+import { WarpFactory, LoggerFactory, defaultCacheOptions } from 'warp-contracts/mjs'
 import fs from 'fs'
 import crocks from 'crocks'
 
@@ -13,7 +13,7 @@ import crocks from 'crocks'
  */
 
 LoggerFactory.INST.logLevel('error')
-const warp = WarpFactory.forMainnet()
+const warp = WarpFactory.forMainnet({ ...defaultCacheOptions, inMemory: true })
 
 const arweave = Arweave.init({
   host: 'arweave.net',
