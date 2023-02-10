@@ -22,5 +22,5 @@ export function search(txt) {
     }))
     .then(res => res.ok ? res.json() : res.text())
     .then(() => true)
-  //.then(({ data }) => botCheck(`@${data.username}`))
+    .then(({ data }) => botCheck(`@${data.username}`))
 }

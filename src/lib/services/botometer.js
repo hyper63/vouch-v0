@@ -22,7 +22,9 @@ export async function botCheck(username) {
     // console.log('Score: ', result[0].display_scores.universal.overall)
     // console.log('Active: ', daysOld)
 
-    return (result[0].display_scores.universal.overall < 2.6 && daysOld > 14)
+    //return (result[0].display_scores.universal.overall < 2.6 && daysOld > 14)
+    return (daysOld > 14)
+
   } catch (e) {
     console.log('ERROR: Could not verify twitter handle ' + username)
     console.log(e.message)
